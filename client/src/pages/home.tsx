@@ -1,5 +1,57 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import Slider from "react-slick";
+
+const EcoProductGallery = () => {
+  const slides = [
+    { title: 'Eco Bag – Lifestyle', img: '/images/bag_main.jpg' },
+    { title: 'Eco Bag – Detail',    img: '/images/bag_detail.jpg' },
+    { title: 'Eco Bag – Close-up',  img: '/images/bag_close.jpg' },
+    { title: 'Eco Bag – Duo',       img: '/images/bag_pair.jpg' },
+  ];
+
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 600,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 3000,
+    arrows: true
+  };
+
+  return (
+    <section id="gallery" className="section bg-brand-beige/40">
+      <div className="container-max">
+        <h2 className="text-3xl md:text-4xl font-extrabold text-brand-green">
+          Eco Product Gallery
+        </h2>
+        <p className="mt-2 text-neutral-700">
+          제품 자체에 집중한 리뉴테크의 에코 패키지 컬렉션.
+        </p>
+
+        <div className="mt-10">
+          <Slider {...settings}>
+            {slides.map((c, i) => (
+              <div key={i} className="px-4">
+                <div className="rounded-2xl overflow-hidden shadow-xl bg-white">
+                  <img src={c.img} alt={c.title} className="w-full h-80 object-cover" />
+                  <div className="p-6">
+                    <h3 className="font-bold text-lg">{c.title}</h3>
+                    <p className="mt-2 text-sm text-neutral-600">
+                      Comfort for you. Relief for the Earth.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </Slider>
+        </div>
+      </div>
+    </section>
+  );
+};
 
 const Home = () => {
   const [navOpacity, setNavOpacity] = useState(0.9);
@@ -54,11 +106,11 @@ const Home = () => {
                 솔루션
               </button>
               <button 
-                onClick={() => scrollToSection('cases')}
+                onClick={() => scrollToSection('gallery')}
                 className="text-gray-700 hover:text-brand-green transition-colors duration-200"
-                data-testid="nav-cases"
+                data-testid="nav-gallery"
               >
-                사례
+                갤러리
               </button>
               <button 
                 onClick={() => scrollToSection('partners')}
@@ -218,68 +270,8 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Case Studies */}
-      <section id="cases" className="py-20 bg-white" data-testid="cases-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-english" data-testid="cases-title-english">Real Impact</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto" data-testid="cases-title-korean">실제 적용 사례</p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            <div className="group cursor-pointer" data-testid="case-shopping-bags">
-              <div className="relative overflow-hidden rounded-2xl shadow-lg">
-                <img 
-                  src="https://images.unsplash.com/photo-1556742502-ec7c0e9f34b1?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                  alt="Paper shopping bags" 
-                  className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-lg font-bold mb-1" data-testid="case-shopping-bags-title-korean">종이 쇼핑백</h3>
-                  <p className="text-sm opacity-90" data-testid="case-shopping-bags-title-english">Paper Shopping Bags</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="group cursor-pointer" data-testid="case-food-packaging">
-              <div className="relative overflow-hidden rounded-2xl shadow-lg">
-                <img 
-                  src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                  alt="Food packaging" 
-                  className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-lg font-bold mb-1" data-testid="case-food-packaging-title-korean">샌드위치 포장</h3>
-                  <p className="text-sm opacity-90" data-testid="case-food-packaging-title-english">Food Packaging</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="group cursor-pointer" data-testid="case-global-brands">
-              <div className="relative overflow-hidden rounded-2xl shadow-lg">
-                <img 
-                  src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                  alt="Global brands" 
-                  className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-lg font-bold mb-1" data-testid="case-global-brands-title-korean">글로벌 브랜드</h3>
-                  <p className="text-sm opacity-90" data-testid="case-global-brands-title-english">Global Brands</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="text-center space-y-4" data-testid="cases-quotes">
-            <p className="text-2xl font-bold text-brand-green font-english" data-testid="quote-english-1">"Because conscious choices create lasting change."</p>
-            <p className="text-xl text-gray-700" data-testid="quote-korean-1">"의식적인 선택이 지속적인 변화를 만듭니다."</p>
-            <p className="text-lg text-brand-dark-green font-english italic" data-testid="quote-english-2">"Comfort for you. Relief for the Earth."</p>
-          </div>
-        </div>
-      </section>
+      {/* Eco Product Gallery */}
+      <EcoProductGallery />
 
       {/* Partners Section */}
       <section id="partners" className="py-20 bg-gray-50" data-testid="partners-section">
