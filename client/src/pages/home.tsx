@@ -1,6 +1,10 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import Slider from "react-slick";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { apiRequest } from "@/lib/queryClient";
+import { type QnaSubmission, type InsertQnaSubmission } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
 import clubavoltaNature from "@assets/KakaoTalk_20250821_115422394_01_1755766655585.jpg";
 import clubavoltaLakeside from "@assets/KakaoTalk_20250821_115422394_07_1755766655585.jpg";
 import clubavoltaUrban from "@assets/KakaoTalk_20250821_115422394_12_1755766655586.jpg";
@@ -53,6 +57,190 @@ const EcoProductGallery = () => {
               </div>
             ))}
           </Slider>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const QnaSection = () => {
+  const [formData, setFormData] = useState<InsertQnaSubmission>({
+    name: "",
+    email: "",
+    question: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: qnaSubmissions = [], isLoading } = useQuery<QnaSubmission[]>({
+    queryKey: ["/api/qna"],
+  });
+
+  const submitQuestionMutation = useMutation({
+    mutationFn: async (data: InsertQnaSubmission) => {
+      const response = await apiRequest("POST", "/api/qna", data);
+      return response.json();
+    },
+    onSuccess: () => {
+      setFormData({ name: "", email: "", question: "" });
+      setIsSubmitting(false);
+      toast({
+        title: "질문이 제출되었습니다!",
+        description: "곧 답변을 드리겠습니다.",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/qna"] });
+    },
+    onError: () => {
+      setIsSubmitting(false);
+      toast({
+        title: "오류가 발생했습니다",
+        description: "다시 시도해 주세요.",
+        variant: "destructive",
+      });
+    }
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name || !formData.email || !formData.question) {
+      toast({
+        title: "모든 항목을 입력해주세요",
+        variant: "destructive",
+      });
+      return;
+    }
+    setIsSubmitting(true);
+    submitQuestionMutation.mutate(formData);
+  };
+
+  const handleInputChange = (field: keyof InsertQnaSubmission) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  return (
+    <section id="qna" className="py-20 bg-brand-beige" data-testid="qna-section">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-brand-dark-green mb-6 font-english" data-testid="qna-title-english">Q&A</h2>
+          <p className="text-xl text-gray-700" data-testid="qna-title-korean">궁금한 점을 남겨주세요</p>
+        </div>
+        
+        <div className="grid lg:grid-cols-2 gap-12">
+          {/* Question Form */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-form">
+            <h3 className="text-2xl font-bold text-brand-green mb-6">질문하기</h3>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
+                  이름 *
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  value={formData.name}
+                  onChange={handleInputChange("name")}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors"
+                  placeholder="이름을 입력해주세요"
+                  data-testid="input-name"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
+                  이메일 *
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleInputChange("email")}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors"
+                  placeholder="이메일을 입력해주세요"
+                  data-testid="input-email"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-2">
+                  질문 *
+                </label>
+                <textarea
+                  id="question"
+                  rows={4}
+                  value={formData.question}
+                  onChange={handleInputChange("question")}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors resize-none"
+                  placeholder="궁금한 점을 자세히 적어주세요"
+                  data-testid="textarea-question"
+                  required
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full bg-brand-green hover:bg-brand-dark-green disabled:opacity-50 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
+                data-testid="button-submit-question"
+              >
+                {isSubmitting ? "제출 중..." : "질문 제출하기"}
+              </button>
+            </form>
+          </div>
+          
+          {/* Q&A List */}
+          <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-list">
+            <h3 className="text-2xl font-bold text-brand-green mb-6">최근 Q&A</h3>
+            
+            {isLoading ? (
+              <div className="space-y-4">
+                <div className="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
+                <div className="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
+                <div className="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
+              </div>
+            ) : qnaSubmissions.length === 0 ? (
+              <p className="text-gray-500 text-center py-8" data-testid="no-questions">아직 등록된 질문이 없습니다.</p>
+            ) : (
+              <div className="space-y-6 max-h-96 overflow-y-auto">
+                {qnaSubmissions.map((submission) => (
+                  <div key={submission.id} className="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0" data-testid={`qna-item-${submission.id}`}>
+                    <div className="mb-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-medium text-gray-900">{submission.name}</span>
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          submission.isAnswered 
+                            ? "bg-green-100 text-green-800" 
+                            : "bg-yellow-100 text-yellow-800"
+                        }`}>
+                          {submission.isAnswered ? "답변완료" : "답변대기"}
+                        </span>
+                      </div>
+                      <p className="text-gray-700 text-sm">{submission.question}</p>
+                      <span className="text-xs text-gray-500">
+                        {new Date(submission.createdAt).toLocaleDateString('ko-KR')}
+                      </span>
+                    </div>
+                    
+                    {submission.answer && (
+                      <div className="bg-brand-beige/30 rounded-lg p-4">
+                        <p className="text-sm font-medium text-brand-dark-green mb-1">답변:</p>
+                        <p className="text-sm text-gray-700">{submission.answer}</p>
+                        {submission.answeredAt && (
+                          <span className="text-xs text-gray-500">
+                            {new Date(submission.answeredAt).toLocaleDateString('ko-KR')}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </section>
@@ -287,44 +475,7 @@ const Home = () => {
       <EcoProductGallery />
 
       {/* Q&A Section */}
-      <section id="qna" className="py-20 bg-brand-beige" data-testid="qna-section">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-brand-dark-green mb-6 font-english" data-testid="qna-title-english">Q&A</h2>
-            <p className="text-xl text-gray-700" data-testid="qna-title-korean">자주 묻는 질문들</p>
-          </div>
-          
-          <div className="space-y-8">
-            <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-item-1">
-              <h3 className="text-xl font-bold text-brand-green mb-4" data-testid="question-1">Q: 리뉴테크의 포장재는 어떤 소재로 만들어지나요?</h3>
-              <p className="text-gray-700 leading-relaxed" data-testid="answer-1">
-                A: 리뉴테크의 포장재는 100% 재활용 종이와 식물 기반 소재로 제작됩니다. 석유 기반 플라스틱을 전혀 사용하지 않으며, 옥수수 전분 등 천연 소재를 활용하여 친환경적이면서도 내구성이 뛰어난 포장재를 제공합니다.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-item-2">
-              <h3 className="text-xl font-bold text-brand-green mb-4" data-testid="question-2">Q: 방수 기능이 정말 효과적인가요?</h3>
-              <p className="text-gray-700 leading-relaxed" data-testid="answer-2">
-                A: 네, 리뉴테크의 포장재는 특수 코팅 기술을 통해 뛰어난 방수 성능을 제공합니다. 비가 오는 날씨에도 내용물을 안전하게 보호하며, 플라스틱을 사용하지 않고도 우수한 방수 효과를 실현했습니다.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-item-3">
-              <h3 className="text-xl font-bold text-brand-green mb-4" data-testid="question-3">Q: 대량 주문이 가능한가요?</h3>
-              <p className="text-gray-700 leading-relaxed" data-testid="answer-3">
-                A: 물론입니다. 리뉴테크는 개인 고객부터 대기업까지 다양한 규모의 주문을 받고 있습니다. 브랜드 맞춤형 디자인과 로고 인쇄 서비스도 제공하며, 대량 주문 시 할인 혜택도 있습니다. 자세한 문의는 연락처로 연락 주시기 바랍니다.
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-item-4">
-              <h3 className="text-xl font-bold text-brand-green mb-4" data-testid="question-4">Q: 포장재는 어떻게 폐기해야 하나요?</h3>
-              <p className="text-gray-700 leading-relaxed" data-testid="answer-4">
-                A: 리뉴테크 포장재는 일반 종이류와 같이 재활용품으로 분리배출하시면 됩니다. 100% 생분해성 소재로 제작되어 자연 환경에서도 안전하게 분해되며, 재활용 과정을 통해 새로운 종이 제품으로 재탄생할 수 있습니다.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <QnaSection />
 
       {/* Partners Section */}
       <section id="partners" className="py-20 bg-gray-50" data-testid="partners-section">
