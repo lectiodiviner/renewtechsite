@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import Slider from "react-slick";
+import clubavoltaNature from "@assets/KakaoTalk_20250821_115422394_01_1755766655585.jpg";
+import clubavoltaLakeside from "@assets/KakaoTalk_20250821_115422394_07_1755766655585.jpg";
+import clubavoltaUrban from "@assets/KakaoTalk_20250821_115422394_12_1755766655586.jpg";
 
 const EcoProductGallery = () => {
   const slides = [
@@ -8,6 +11,9 @@ const EcoProductGallery = () => {
     { title: 'Eco Bag – Detail',    img: '/images/bag_detail.jpg' },
     { title: 'Eco Bag – Close-up',  img: '/images/bag_close.jpg' },
     { title: 'Eco Bag – Duo',       img: '/images/bag_pair.jpg' },
+    { title: 'ClubAvolta – Nature', img: clubavoltaNature },
+    { title: 'ClubAvolta – Lakeside', img: clubavoltaLakeside },
+    { title: 'ClubAvolta – Urban', img: clubavoltaUrban },
   ];
 
   const settings = {
@@ -118,6 +124,13 @@ const Home = () => {
                 data-testid="nav-partners"
               >
                 파트너
+              </button>
+              <button 
+                onClick={() => scrollToSection('qna')}
+                className="text-gray-700 hover:text-brand-green transition-colors duration-200"
+                data-testid="nav-qna"
+              >
+                Q&A
               </button>
             </div>
           </div>
@@ -272,6 +285,46 @@ const Home = () => {
 
       {/* Eco Product Gallery */}
       <EcoProductGallery />
+
+      {/* Q&A Section */}
+      <section id="qna" className="py-20 bg-brand-beige" data-testid="qna-section">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-brand-dark-green mb-6 font-english" data-testid="qna-title-english">Q&A</h2>
+            <p className="text-xl text-gray-700" data-testid="qna-title-korean">자주 묻는 질문들</p>
+          </div>
+          
+          <div className="space-y-8">
+            <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-item-1">
+              <h3 className="text-xl font-bold text-brand-green mb-4" data-testid="question-1">Q: 리뉴테크의 포장재는 어떤 소재로 만들어지나요?</h3>
+              <p className="text-gray-700 leading-relaxed" data-testid="answer-1">
+                A: 리뉴테크의 포장재는 100% 재활용 종이와 식물 기반 소재로 제작됩니다. 석유 기반 플라스틱을 전혀 사용하지 않으며, 옥수수 전분 등 천연 소재를 활용하여 친환경적이면서도 내구성이 뛰어난 포장재를 제공합니다.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-item-2">
+              <h3 className="text-xl font-bold text-brand-green mb-4" data-testid="question-2">Q: 방수 기능이 정말 효과적인가요?</h3>
+              <p className="text-gray-700 leading-relaxed" data-testid="answer-2">
+                A: 네, 리뉴테크의 포장재는 특수 코팅 기술을 통해 뛰어난 방수 성능을 제공합니다. 비가 오는 날씨에도 내용물을 안전하게 보호하며, 플라스틱을 사용하지 않고도 우수한 방수 효과를 실현했습니다.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-item-3">
+              <h3 className="text-xl font-bold text-brand-green mb-4" data-testid="question-3">Q: 대량 주문이 가능한가요?</h3>
+              <p className="text-gray-700 leading-relaxed" data-testid="answer-3">
+                A: 물론입니다. 리뉴테크는 개인 고객부터 대기업까지 다양한 규모의 주문을 받고 있습니다. 브랜드 맞춤형 디자인과 로고 인쇄 서비스도 제공하며, 대량 주문 시 할인 혜택도 있습니다. 자세한 문의는 연락처로 연락 주시기 바랍니다.
+              </p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-item-4">
+              <h3 className="text-xl font-bold text-brand-green mb-4" data-testid="question-4">Q: 포장재는 어떻게 폐기해야 하나요?</h3>
+              <p className="text-gray-700 leading-relaxed" data-testid="answer-4">
+                A: 리뉴테크 포장재는 일반 종이류와 같이 재활용품으로 분리배출하시면 됩니다. 100% 생분해성 소재로 제작되어 자연 환경에서도 안전하게 분해되며, 재활용 과정을 통해 새로운 종이 제품으로 재탄생할 수 있습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Partners Section */}
       <section id="partners" className="py-20 bg-gray-50" data-testid="partners-section">
