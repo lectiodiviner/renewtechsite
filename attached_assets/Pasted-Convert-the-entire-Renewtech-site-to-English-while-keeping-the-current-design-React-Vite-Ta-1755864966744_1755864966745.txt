@@ -1,0 +1,63 @@
+Convert the entire Renewtech site to **English** while keeping the current design (React + Vite + Tailwind).
+Also add/prepare a **video** workflow for the Hero and Gallery.
+
+Scope:
+1) Global copy to English
+   - index.html <title>/<meta name="description"> in English:
+     - Title: "RENEWTECH | Sustainable Packaging"
+     - Description: "RENEWTECH — Sustainable packaging solutions. Plant-based, 100% recycled paper, plastic-free rainproof."
+   - Nav labels: Problem / Hope / Solution / Eco Product Gallery / Partners / Contact / Q&A
+   - Hero:
+     - H1: "If not now, then when?"
+     - Sub: "Choose sustainable packaging today."
+     - CTA: "Learn more"
+   - Problem section:
+     - Headline: "8 million tons of plastic enter the oceans every year."
+     - Body: "Every year, millions of tons of plastic enter our oceans. We are losing our planet, one moment at a time."
+   - Hope section:
+     - Headline: "But it's not too late."
+     - Body: "The landscapes we protect show what we can still save—together."
+   - Solution section (3 cards):
+     - Card #1: Title "Plant-based", Body "We use plant-based materials instead of petroleum."
+     - Card #2: Title "100% Recycled", Body "Our products are made with 100% recycled paper."
+     - Card #3: Title "Rainproof. Plastic-free.", Body "Water resistance without plastic films or coatings."
+   - Eco Product Gallery (section subtitle):
+     - Subtitle: "A closer look at our eco-friendly packaging."
+   - Partners section:
+     - Title: "Partners & Process"
+     - Body: "We work with leading partners to deliver quality materials, 100% recycled paper, and rigorous R&D testing."
+     - Card captions in English.
+   - Contact section:
+     - Intro: "We’ll get back to you shortly."
+     - Keep these exact fields/values:
+       Email: anytime@naver.com (mailto)
+       Phone: +82-10-8767-3888 (tel)
+       Address: A-216, 484 Tongilro, Seodaemun-gu, Seoul, Korea 03628
+       Website: https://www.anytime.kim (open in new tab)
+     - Contact form placeholders in English: "Your name", "Email", "Message", button "Send"
+   - Q&A page: Convert FAQ and UI copy to English.
+     Example FAQs:
+       Q: "Is the paper bag water-resistant?"
+       A: "Yes. It’s designed for daily water resistance without plastic coatings."
+       Q: "Is it 100% recycled paper?"
+       A: "Yes. We use 100% recycled paper."
+       Q: "Bulk orders and lead time?"
+       A: "Please contact us for a quote and scheduling."
+   - Accessibility: Ensure all alt texts are English.
+
+2) Hero video setup
+   - Create folder public/videos and support local video sources:
+     - /videos/hero.mp4 (primary), optional /videos/hero.webm (alt)
+     - Add <video> with muted, playsInline, autoPlay, loop, poster.
+     - Keep a dark overlay for text readability.
+   - If local video is absent, keep the current stock video as fallback.
+
+3) Gallery video option (mixed slides)
+   - Update Eco Product Gallery to accept slides with either image or video:
+     slides can be like:
+     { type: 'image', title: 'Eco Bag — Lifestyle', src: '/images/bag_main.jpg' }
+     { type: 'video', title: 'Eco Bag — Overview', src: '/videos/bag_overview.mp4' }
+   - For video slides, render a <video controls muted playsInline> element with responsive styling.
+
+4) Do not change routing, colors, or layout. Do not remove Tailwind classes.
+5) Keep all links and contact values exactly as is.

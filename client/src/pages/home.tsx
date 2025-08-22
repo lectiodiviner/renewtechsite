@@ -11,13 +11,15 @@ import clubavoltaUrban from "@assets/KakaoTalk_20250821_115422394_12_17557666555
 
 const EcoProductGallery = () => {
   const slides = [
-    { title: 'Eco Bag – Lifestyle', img: '/images/bag_main.jpg' },
-    { title: 'Eco Bag – Detail',    img: '/images/bag_detail.jpg' },
-    { title: 'Eco Bag – Close-up',  img: '/images/bag_close.jpg' },
-    { title: 'Eco Bag – Duo',       img: '/images/bag_pair.jpg' },
-    { title: 'ClubAvolta – Nature', img: clubavoltaNature },
-    { title: 'ClubAvolta – Lakeside', img: clubavoltaLakeside },
-    { title: 'ClubAvolta – Urban', img: clubavoltaUrban },
+    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaNature, category: 'Recycled Kraft Paper Shopping Bag' },
+    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaLakeside, category: 'Recycled Kraft Paper Shopping Bag' },
+    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaUrban, category: 'Recycled Kraft Paper Shopping Bag' },
+  ];
+
+  const productCategories = [
+    'Recycled Kraft Paper Shopping Bag',
+    'Biodegradable shopping bag', 
+    'Biodegradable straws'
   ];
 
   const settings = {
@@ -42,21 +44,39 @@ const EcoProductGallery = () => {
         </p>
 
         <div className="mt-10">
-          <Slider {...settings}>
-            {slides.map((c, i) => (
-              <div key={i} className="px-4">
-                <div className="rounded-2xl overflow-hidden shadow-xl bg-white">
-                  <img src={c.img} alt={c.title} className="w-full h-80 object-cover" />
-                  <div className="p-6">
-                    <h3 className="font-bold text-lg">{c.title}</h3>
-                    <p className="mt-2 text-sm text-neutral-600">
-                      Comfort for you. Relief for the Earth.
-                    </p>
-                  </div>
-                </div>
+          {/* Product Categories */}
+          <div className="grid md:grid-cols-3 gap-8 mb-12">
+            {productCategories.map((category, index) => (
+              <div key={index} className="bg-white rounded-2xl p-6 shadow-lg text-center" data-testid={`category-${index}`}>
+                <h3 className="text-xl font-bold text-brand-green mb-2">{category}</h3>
+                <p className="text-sm text-gray-600">
+                  {category === 'Recycled Kraft Paper Shopping Bag' ? '재활용 크래프트지 쇼핑백' :
+                   category === 'Biodegradable shopping bag' ? '생분해 쇼핑백' :
+                   '생분해 빨대'}
+                </p>
               </div>
             ))}
-          </Slider>
+          </div>
+          
+          {/* Product Gallery Slider */}
+          <div className="bg-white rounded-2xl p-6 shadow-lg">
+            <h3 className="text-2xl font-bold text-brand-green mb-6 text-center">제품 갤러리</h3>
+            <Slider {...settings}>
+              {slides.map((c, i) => (
+                <div key={i} className="px-4">
+                  <div className="rounded-2xl overflow-hidden shadow-lg bg-white">
+                    <img src={c.img} alt={c.title} className="w-full h-80 object-cover" />
+                    <div className="p-6">
+                      <h4 className="font-bold text-lg text-brand-dark-green">{c.title}</h4>
+                      <p className="mt-2 text-sm text-neutral-600">
+                        Comfort for you. Relief for the Earth.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          </div>
         </div>
       </div>
     </section>
@@ -307,13 +327,6 @@ const Home = () => {
                 갤러리
               </button>
               <button 
-                onClick={() => scrollToSection('partners')}
-                className="text-gray-700 hover:text-brand-green transition-colors duration-200"
-                data-testid="nav-partners"
-              >
-                파트너
-              </button>
-              <button 
                 onClick={() => scrollToSection('qna')}
                 className="text-gray-700 hover:text-brand-green transition-colors duration-200"
                 data-testid="nav-qna"
@@ -477,50 +490,6 @@ const Home = () => {
       {/* Q&A Section */}
       <QnaSection />
 
-      {/* Partners Section */}
-      <section id="partners" className="py-20 bg-gray-50" data-testid="partners-section">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6" data-testid="partners-title-english">Partners & Process</h2>
-            <p className="text-xl text-gray-600" data-testid="partners-title-korean">협력으로 더 큰 변화를 만듭니다</p>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div>
-              <h3 className="text-2xl font-bold text-brand-green mb-6" data-testid="partners-subtitle">Our Partners</h3>
-              <div className="space-y-4">
-                <div className="bg-white p-6 rounded-xl shadow-md flex items-center space-x-4" data-testid="partner-sunjin">
-                  <div className="w-16 h-16 bg-brand-green rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">S</span>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-lg" data-testid="partner-sunjin-korean">선진이노텍</h4>
-                    <p className="text-gray-600" data-testid="partner-sunjin-english">Sunjin Innotech</p>
-                  </div>
-                </div>
-                <div className="bg-white p-6 rounded-xl shadow-md flex items-center space-x-4" data-testid="partner-paper-korea">
-                  <div className="w-16 h-16 bg-brand-dark-green rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">P</span>
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-lg" data-testid="partner-paper-korea-korean">페이퍼코리아</h4>
-                    <p className="text-gray-600" data-testid="partner-paper-korea-english">Paper Korea</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div>
-              <img 
-                src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Manufacturing process" 
-                className="w-full h-80 object-cover rounded-2xl shadow-lg"
-                data-testid="img-manufacturing-process"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
 
       {/* Footer */}
       <footer className="bg-brand-dark-green text-white py-16" data-testid="footer">
