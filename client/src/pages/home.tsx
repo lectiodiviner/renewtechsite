@@ -11,6 +11,7 @@ import clubavoltaUrban from "@assets/KakaoTalk_20250821_115422394_12_17557666555
 import biodegradableBag1 from "@assets/KakaoTalk_20250825_121348376_1756109054508.png";
 import biodegradableBag2 from "@assets/KakaoTalk_20250825_121524132_1756109054509.png";
 import biodegradableBag3 from "@assets/KakaoTalk_20250825_121631471_1756109054509.png";
+import waterproofPaper from "@assets/KakaoTalk_20250825_205747637_1756123331624.png";
 
 const EcoProductGallery = () => {
   const slides = [
@@ -478,12 +479,12 @@ const Home = () => {
             
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300" data-testid="solution-card-packaging">
               <img 
-                src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Waterproof eco-friendly packaging" 
+                src={waterproofPaper} 
+                alt="Waterproof paper demonstration" 
                 className="w-full h-48 object-cover rounded-xl mb-6"
               />
-              <h3 className="text-xl font-bold text-brand-green mb-4 font-english" data-testid="solution-packaging-title">Rainproof, Plastic-Free</h3>
-              <p className="text-gray-600" data-testid="solution-packaging-description">Waterproof plastic-free packaging</p>
+              <h3 className="text-xl font-bold text-brand-green mb-4 font-english" data-testid="solution-packaging-title">Waterproof</h3>
+              <p className="text-gray-600" data-testid="solution-packaging-description">Waterproof paper</p>
             </div>
           </div>
         </div>
