@@ -8,12 +8,18 @@ import { useToast } from "@/hooks/use-toast";
 import clubavoltaNature from "@assets/KakaoTalk_20250821_115422394_01_1755766655585.jpg";
 import clubavoltaLakeside from "@assets/KakaoTalk_20250821_115422394_07_1755766655585.jpg";
 import clubavoltaUrban from "@assets/KakaoTalk_20250821_115422394_12_1755766655586.jpg";
+import biodegradableBag1 from "@assets/KakaoTalk_20250825_121348376_1756109054508.png";
+import biodegradableBag2 from "@assets/KakaoTalk_20250825_121524132_1756109054509.png";
+import biodegradableBag3 from "@assets/KakaoTalk_20250825_121631471_1756109054509.png";
 
 const EcoProductGallery = () => {
   const slides = [
     { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaNature, category: 'Recycled Kraft Paper Shopping Bag' },
     { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaLakeside, category: 'Recycled Kraft Paper Shopping Bag' },
     { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaUrban, category: 'Recycled Kraft Paper Shopping Bag' },
+    { title: 'Biodegradable shopping bag', img: biodegradableBag1, category: 'Biodegradable shopping bag' },
+    { title: 'Biodegradable shopping bag', img: biodegradableBag2, category: 'Biodegradable shopping bag' },
+    { title: 'Biodegradable shopping bag', img: biodegradableBag3, category: 'Biodegradable shopping bag' },
   ];
 
   const productCategories = [
