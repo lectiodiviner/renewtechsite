@@ -410,12 +410,12 @@ const Home = () => {
             
             <div className="relative overflow-hidden rounded-xl shadow-lg group" data-testid="card-melting-glaciers">
               <img 
-                src="https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Climate change" 
+                src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
+                alt="Melting glaciers" 
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                <p className="text-white font-medium" data-testid="text-climate-change">Climate Change</p>
+                <p className="text-white font-medium" data-testid="text-melting-glaciers">Melting Glaciers</p>
               </div>
             </div>
           </div>
