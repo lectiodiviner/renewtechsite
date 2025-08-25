@@ -478,8 +478,8 @@ const Home = () => {
             
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300" data-testid="solution-card-packaging">
               <img 
-                src="https://images.unsplash.com/photo-1607988795691-3d0147b43231?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
-                alt="Sustainable packaging" 
+                src="https://images.unsplash.com/photo-1542838132-92c53300491e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
+                alt="Waterproof eco-friendly packaging" 
                 className="w-full h-48 object-cover rounded-xl mb-6"
               />
               <h3 className="text-xl font-bold text-brand-green mb-4 font-english" data-testid="solution-packaging-title">Rainproof, Plastic-Free</h3>
