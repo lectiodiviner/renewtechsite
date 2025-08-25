@@ -40,7 +40,7 @@ const EcoProductGallery = () => {
           Eco Product Gallery
         </h2>
         <p className="mt-2 text-neutral-700">
-          제품 자체에 집중한 리뉴테크의 에코 패키지 컬렉션.
+          RenewTech's eco package collection focused on the products themselves.
         </p>
 
         <div className="mt-10">
@@ -50,9 +50,9 @@ const EcoProductGallery = () => {
               <div key={index} className="bg-white rounded-2xl p-6 shadow-lg text-center" data-testid={`category-${index}`}>
                 <h3 className="text-xl font-bold text-brand-green mb-2">{category}</h3>
                 <p className="text-sm text-gray-600">
-                  {category === 'Recycled Kraft Paper Shopping Bag' ? '재활용 크래프트지 쇼핑백' :
-                   category === 'Biodegradable shopping bag' ? '생분해 쇼핑백' :
-                   '생분해 빨대'}
+                  {category === 'Recycled Kraft Paper Shopping Bag' ? 'Made from 100% recycled kraft paper' :
+                   category === 'Biodegradable shopping bag' ? 'Completely biodegradable material' :
+                   'Eco-friendly biodegradable straws'}
                 </p>
               </div>
             ))}
@@ -60,7 +60,7 @@ const EcoProductGallery = () => {
           
           {/* Product Gallery Slider */}
           <div className="bg-white rounded-2xl p-6 shadow-lg">
-            <h3 className="text-2xl font-bold text-brand-green mb-6 text-center">제품 갤러리</h3>
+            <h3 className="text-2xl font-bold text-brand-green mb-6 text-center">Product Gallery</h3>
             <Slider {...settings}>
               {slides.map((c, i) => (
                 <div key={i} className="px-4">
@@ -106,16 +106,16 @@ const QnaSection = () => {
       setFormData({ name: "", email: "", question: "" });
       setIsSubmitting(false);
       toast({
-        title: "질문이 제출되었습니다!",
-        description: "곧 답변을 드리겠습니다.",
+        title: "Question submitted!",
+        description: "We will get back to you soon.",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/qna"] });
     },
     onError: () => {
       setIsSubmitting(false);
       toast({
-        title: "오류가 발생했습니다",
-        description: "다시 시도해 주세요.",
+        title: "An error occurred",
+        description: "Please try again.",
         variant: "destructive",
       });
     }
@@ -125,7 +125,7 @@ const QnaSection = () => {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.question) {
       toast({
-        title: "모든 항목을 입력해주세요",
+        title: "Please fill in all fields",
         variant: "destructive",
       });
       return;
@@ -145,17 +145,17 @@ const QnaSection = () => {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-brand-dark-green mb-6 font-english" data-testid="qna-title-english">Q&A</h2>
-          <p className="text-xl text-gray-700" data-testid="qna-title-korean">궁금한 점을 남겨주세요</p>
+          <p className="text-xl text-gray-700" data-testid="qna-title-english">Have questions? Send them to us</p>
         </div>
         
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Question Form */}
           <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-form">
-            <h3 className="text-2xl font-bold text-brand-green mb-6">질문하기</h3>
+            <h3 className="text-2xl font-bold text-brand-green mb-6">Ask a Question</h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  이름 *
+                  Name *
                 </label>
                 <input
                   id="name"
@@ -163,7 +163,7 @@ const QnaSection = () => {
                   value={formData.name}
                   onChange={handleInputChange("name")}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors"
-                  placeholder="이름을 입력해주세요"
+                  placeholder="Enter your name"
                   data-testid="input-name"
                   required
                 />
@@ -171,7 +171,7 @@ const QnaSection = () => {
               
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  이메일 *
+                  Email *
                 </label>
                 <input
                   id="email"
@@ -179,7 +179,7 @@ const QnaSection = () => {
                   value={formData.email}
                   onChange={handleInputChange("email")}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors"
-                  placeholder="이메일을 입력해주세요"
+                  placeholder="Enter your email"
                   data-testid="input-email"
                   required
                 />
@@ -187,7 +187,7 @@ const QnaSection = () => {
               
               <div>
                 <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-2">
-                  질문 *
+                  Question *
                 </label>
                 <textarea
                   id="question"
@@ -195,7 +195,7 @@ const QnaSection = () => {
                   value={formData.question}
                   onChange={handleInputChange("question")}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors resize-none"
-                  placeholder="궁금한 점을 자세히 적어주세요"
+                  placeholder="Please describe your question in detail"
                   data-testid="textarea-question"
                   required
                 />
@@ -207,14 +207,14 @@ const QnaSection = () => {
                 className="w-full bg-brand-green hover:bg-brand-dark-green disabled:opacity-50 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
                 data-testid="button-submit-question"
               >
-                {isSubmitting ? "제출 중..." : "질문 제출하기"}
+                {isSubmitting ? "Submitting..." : "Submit Question"}
               </button>
             </form>
           </div>
           
           {/* Q&A List */}
           <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-list">
-            <h3 className="text-2xl font-bold text-brand-green mb-6">최근 Q&A</h3>
+            <h3 className="text-2xl font-bold text-brand-green mb-6">Recent Q&A</h3>
             
             {isLoading ? (
               <div className="space-y-4">
@@ -223,7 +223,7 @@ const QnaSection = () => {
                 <div className="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
               </div>
             ) : qnaSubmissions.length === 0 ? (
-              <p className="text-gray-500 text-center py-8" data-testid="no-questions">아직 등록된 질문이 없습니다.</p>
+              <p className="text-gray-500 text-center py-8" data-testid="no-questions">No questions registered yet.</p>
             ) : (
               <div className="space-y-6 max-h-96 overflow-y-auto">
                 {qnaSubmissions.map((submission) => (
@@ -236,7 +236,7 @@ const QnaSection = () => {
                             ? "bg-green-100 text-green-800" 
                             : "bg-yellow-100 text-yellow-800"
                         }`}>
-                          {submission.isAnswered ? "답변완료" : "답변대기"}
+                          {submission.isAnswered ? "Answered" : "Pending"}
                         </span>
                       </div>
                       <p className="text-gray-700 text-sm">{submission.question}</p>
@@ -247,7 +247,7 @@ const QnaSection = () => {
                     
                     {submission.answer && (
                       <div className="bg-brand-beige/30 rounded-lg p-4">
-                        <p className="text-sm font-medium text-brand-dark-green mb-1">답변:</p>
+                        <p className="text-sm font-medium text-brand-dark-green mb-1">Answer:</p>
                         <p className="text-sm text-gray-700">{submission.answer}</p>
                         {submission.answeredAt && (
                           <span className="text-xs text-gray-500">
@@ -302,7 +302,6 @@ const Home = () => {
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
               <span className="text-2xl font-bold text-brand-green font-english" data-testid="logo-english">RENEWTECH</span>
-              <span className="ml-2 text-lg font-medium text-gray-700" data-testid="logo-korean">리뉴테크</span>
             </div>
             <div className="hidden md:flex space-x-8">
               <button 
@@ -310,21 +309,21 @@ const Home = () => {
                 className="text-gray-700 hover:text-brand-green transition-colors duration-200"
                 data-testid="nav-problem"
               >
-                환경 문제
+                Environmental Issues
               </button>
               <button 
                 onClick={() => scrollToSection('solution')}
                 className="text-gray-700 hover:text-brand-green transition-colors duration-200"
                 data-testid="nav-solution"
               >
-                솔루션
+                Solutions
               </button>
               <button 
                 onClick={() => scrollToSection('gallery')}
                 className="text-gray-700 hover:text-brand-green transition-colors duration-200"
                 data-testid="nav-gallery"
               >
-                갤러리
+                Gallery
               </button>
               <button 
                 onClick={() => scrollToSection('qna')}
@@ -354,14 +353,14 @@ const Home = () => {
             If not now, then when?
           </h1>
           <p className="text-2xl md:text-3xl mb-8 animate-slide-up font-light" data-testid="hero-title-korean">
-            지금 바꾸지 않으면, 언제 바꾸시겠습니까?
+            Change starts now, not later.
           </p>
           <button 
             onClick={() => scrollToSection('solution')}
             className="bg-brand-green hover:bg-brand-dark-green text-white px-8 py-4 rounded-lg text-lg font-medium transition-all duration-300 transform hover:scale-105 animate-float"
             data-testid="button-hero-cta"
           >
-            리뉴테크 알아보기
+            Learn About RenewTech
           </button>
         </div>
         
@@ -377,7 +376,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 font-english" data-testid="problem-title-english">The Crisis We Face</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto" data-testid="problem-title-korean">우리가 직면한 환경 위기</p>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto" data-testid="problem-title-korean">The environmental crisis we face today</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 mb-16">
@@ -388,7 +387,7 @@ const Home = () => {
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                <p className="text-white font-medium" data-testid="text-plastic-pollution">플라스틱 오염</p>
+                <p className="text-white font-medium" data-testid="text-plastic-pollution">Plastic Pollution</p>
               </div>
             </div>
             
@@ -399,7 +398,7 @@ const Home = () => {
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                <p className="text-white font-medium" data-testid="text-industrial-pollution">공장 매연</p>
+                <p className="text-white font-medium" data-testid="text-industrial-pollution">Industrial Pollution</p>
               </div>
             </div>
             
@@ -410,7 +409,7 @@ const Home = () => {
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-black/40 flex items-end p-6">
-                <p className="text-white font-medium" data-testid="text-melting-glaciers">빙하 융해</p>
+                <p className="text-white font-medium" data-testid="text-melting-glaciers">Melting Glaciers</p>
               </div>
             </div>
           </div>
@@ -418,7 +417,7 @@ const Home = () => {
           <div className="text-center bg-white rounded-2xl p-8 shadow-lg" data-testid="statistics-card">
             <div className="text-6xl font-bold text-brand-green mb-4 font-english" data-testid="statistic-number">8M</div>
             <p className="text-2xl font-bold text-gray-900 mb-2 font-english" data-testid="statistic-text-english">tons of plastic enter the oceans every year</p>
-            <p className="text-lg text-gray-600" data-testid="statistic-text-korean">매년 8백만 톤의 플라스틱이 바다로 흘러갑니다</p>
+            <p className="text-lg text-gray-600" data-testid="statistic-text-korean">8 million tons of plastic flow into our oceans every year</p>
           </div>
         </div>
       </section>
@@ -438,7 +437,7 @@ const Home = () => {
         
         <div className="relative z-10 max-w-4xl mx-auto px-4 text-center text-white">
           <h2 className="text-5xl md:text-6xl font-bold mb-6 font-english" data-testid="hope-title-english">But it's not too late.</h2>
-          <p className="text-2xl md:text-3xl font-light" data-testid="hope-title-korean">아직 늦지 않았습니다.</p>
+          <p className="text-2xl md:text-3xl font-light" data-testid="hope-title-korean">It's not too late to make a change.</p>
         </div>
       </section>
 
@@ -447,7 +446,7 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-bold text-brand-dark-green mb-6 font-english" data-testid="solution-title-english">Why Sustainable Packaging?</h2>
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto" data-testid="solution-title-korean">지속가능한 포장재를 선택해야 하는 이유</p>
+            <p className="text-xl text-gray-700 max-w-3xl mx-auto" data-testid="solution-title-korean">Why you should choose sustainable packaging</p>
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
@@ -458,7 +457,7 @@ const Home = () => {
                 className="w-full h-48 object-cover rounded-xl mb-6"
               />
               <h3 className="text-xl font-bold text-brand-green mb-4 font-english" data-testid="solution-plants-title">Made from plants, not petroleum</h3>
-              <p className="text-gray-600" data-testid="solution-plants-description">석유가 아닌 식물에서 추출한 친환경 소재로 제작</p>
+              <p className="text-gray-600" data-testid="solution-plants-description">Made from eco-friendly materials extracted from plants, not petroleum</p>
             </div>
             
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300" data-testid="solution-card-paper">
@@ -468,7 +467,7 @@ const Home = () => {
                 className="w-full h-48 object-cover rounded-xl mb-6"
               />
               <h3 className="text-xl font-bold text-brand-green mb-4 font-english" data-testid="solution-paper-title">100% Recycled Paper</h3>
-              <p className="text-gray-600" data-testid="solution-paper-description">100% 재활용 용지로 제작된 지속가능한 포장재</p>
+              <p className="text-gray-600" data-testid="solution-paper-description">Sustainable packaging made from 100% recycled paper</p>
             </div>
             
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300" data-testid="solution-card-packaging">
@@ -478,7 +477,7 @@ const Home = () => {
                 className="w-full h-48 object-cover rounded-xl mb-6"
               />
               <h3 className="text-xl font-bold text-brand-green mb-4 font-english" data-testid="solution-packaging-title">Rainproof, Plastic-Free</h3>
-              <p className="text-gray-600" data-testid="solution-packaging-description">방수 기능을 갖춘 플라스틱 프리 포장재</p>
+              <p className="text-gray-600" data-testid="solution-packaging-description">Waterproof plastic-free packaging</p>
             </div>
           </div>
         </div>
@@ -498,9 +497,8 @@ const Home = () => {
             <div>
               <div className="flex items-center mb-4">
                 <span className="text-3xl font-bold font-english" data-testid="footer-logo-english">RENEWTECH</span>
-                <span className="ml-3 text-xl" data-testid="footer-logo-korean">리뉴테크</span>
               </div>
-              <p className="text-gray-300 mb-6" data-testid="footer-description">지속가능한 미래를 위한 포장재 솔루션</p>
+              <p className="text-gray-300 mb-6" data-testid="footer-description">Sustainable packaging solutions for a better future</p>
               <div className="flex space-x-4">
                 <a 
                   href="#" 
