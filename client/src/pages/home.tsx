@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import { type QnaSubmission, type InsertQnaSubmission } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/lib/supabase";
 import clubavoltaNature from "@assets/KakaoTalk_20250821_115422394_01_1755766655585.jpg";
 import clubavoltaLakeside from "@assets/KakaoTalk_20250821_115422394_07_1755766655585.jpg";
 import clubavoltaUrban from "@assets/KakaoTalk_20250821_115422394_12_1755766655586.jpg";
@@ -13,15 +14,167 @@ import biodegradableBag2 from "@assets/KakaoTalk_20250825_121524132_175610905450
 import biodegradableBag3 from "@assets/KakaoTalk_20250825_121631471_1756109054509.png";
 import waterproofPaper from "@assets/KakaoTalk_20250825_205747637_1756123331624.png";
 
+interface SlideItem {
+  title: string;
+  img: string;
+  category: string;
+  description?: string;
+  isFromSupabase?: boolean;
+  mediaType?: 'image' | 'video';
+}
+
 const EcoProductGallery = () => {
-  const slides = [
-    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaNature, category: 'Recycled Kraft Paper Shopping Bag' },
-    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaLakeside, category: 'Recycled Kraft Paper Shopping Bag' },
-    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaUrban, category: 'Recycled Kraft Paper Shopping Bag' },
-    { title: 'Biodegradable shopping bag', img: biodegradableBag1, category: 'Biodegradable shopping bag' },
-    { title: 'Biodegradable shopping bag', img: biodegradableBag2, category: 'Biodegradable shopping bag' },
-    { title: 'Biodegradable shopping bag', img: biodegradableBag3, category: 'Biodegradable shopping bag' },
-  ];
+  const [slides, setSlides] = useState<SlideItem[]>([
+    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaNature, category: 'Recycled Kraft Paper Shopping Bag', description: 'Comfort for you. Relief for the Earth.' },
+    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaLakeside, category: 'Recycled Kraft Paper Shopping Bag', description: 'Comfort for you. Relief for the Earth.' },
+    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaUrban, category: 'Recycled Kraft Paper Shopping Bag', description: 'Comfort for you. Relief for the Earth.' },
+    { title: 'Biodegradable shopping bag', img: biodegradableBag1, category: 'Biodegradable shopping bag', description: 'Comfort for you. Relief for the Earth.' },
+    { title: 'Biodegradable shopping bag', img: biodegradableBag2, category: 'Biodegradable shopping bag', description: 'Comfort for you. Relief for the Earth.' },
+    { title: 'Biodegradable shopping bag', img: biodegradableBag3, category: 'Biodegradable shopping bag', description: 'Comfort for you. Relief for the Earth.' },
+  ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [userInteracted, setUserInteracted] = useState(false);
+
+  // 사용자 상호작용 후 자동재생 시도
+  const attemptAutoplay = () => {
+    if (!userInteracted) return;
+    
+    const allVideos = document.querySelectorAll('video');
+    allVideos.forEach((video, index) => {
+      if (video.paused) {
+        video.play().catch((error) => {
+          console.log(`영상 ${index} 자동 재생 실패:`, error);
+        });
+      }
+    });
+  };
+
+  // 사용자 상호작용 감지
+  useEffect(() => {
+    const handleUserInteraction = () => {
+      setUserInteracted(true);
+      // 상호작용 후 자동재생 시도
+      setTimeout(attemptAutoplay, 100);
+    };
+
+    // 다양한 사용자 상호작용 이벤트 리스너
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
+    document.addEventListener('scroll', handleUserInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleUserInteraction);
+      document.removeEventListener('touchstart', handleUserInteraction);
+      document.removeEventListener('keydown', handleUserInteraction);
+      document.removeEventListener('scroll', handleUserInteraction);
+    };
+  }, []);
+
+  // Supabase에서 등록된 이미지 가져오기
+  useEffect(() => {
+    const fetchProductImages = async () => {
+      setIsLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('product_gallery')
+          .select('*')
+          .eq('is_active', true)
+          .order('sort_order', { ascending: true })
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('이미지 가져오기 오류:', error);
+          return;
+        }
+
+        if (data && data.length > 0) {
+          // 디버깅: 데이터 구조 확인
+          console.log('Supabase에서 가져온 데이터:', data);
+          
+          // Supabase 미디어를 기존 이미지와 합치기
+          const supabaseSlides: SlideItem[] = data.map((item) => ({
+            title: item.title,
+            img: item.image_url,
+            category: item.description || 'Product',
+            description: item.description,
+            isFromSupabase: true,
+            mediaType: (item.mime_type && item.mime_type.startsWith('video/') ? 'video' : 'image') as 'image' | 'video'
+          }));
+
+          console.log('변환된 슬라이드:', supabaseSlides);
+
+          // 기존 이미지와 Supabase 미디어를 합치기
+          const combinedSlides = [...supabaseSlides, ...slides];
+          setSlides(combinedSlides);
+        }
+      } catch (error) {
+        console.error('이미지 가져오기 실패:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProductImages();
+
+    // 실시간 구독 설정
+    const channel = supabase
+      .channel('product_gallery_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'product_gallery'
+        },
+        () => {
+          // 변경사항이 발생하면 이미지 목록을 다시 가져오기
+          fetchProductImages();
+        }
+      )
+      .subscribe();
+
+    // 컴포넌트 언마운트 시 구독 해제
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []); // 빈 의존성 배열로 한 번만 실행
+
+  // 슬라이더 초기화 후 첫 번째 영상 자동 재생
+  useEffect(() => {
+    if (!isLoading && slides.length > 0) {
+      // 슬라이더가 렌더링된 후 첫 번째 영상 자동 재생
+      const timer = setTimeout(() => {
+        if (userInteracted) {
+          const firstVideo = document.querySelector('video');
+          if (firstVideo && firstVideo.paused) {
+            firstVideo.play().catch(() => {
+              console.log('첫 번째 영상 자동 재생 실패:', firstVideo.src);
+            });
+          }
+        }
+      }, 1000); // 1초 후 실행
+
+      // 추가로 모든 영상이 로드된 후 자동재생 시도
+      const loadTimer = setTimeout(() => {
+        if (userInteracted) {
+          const allVideos = document.querySelectorAll('video');
+          allVideos.forEach((video, index) => {
+            if (index === 0 && video.paused) {
+              video.play().catch(() => {
+                console.log('첫 번째 영상 자동 재생 실패:', video.src);
+              });
+            }
+          });
+        }
+      }, 2000);
+
+      return () => {
+        clearTimeout(timer);
+        clearTimeout(loadTimer);
+      };
+    }
+  }, [isLoading, slides.length, userInteracted]);
 
   const productCategories = [
     'Recycled Kraft Paper Shopping Bag',
@@ -37,7 +190,45 @@ const EcoProductGallery = () => {
     slidesToScroll: 1,
     autoplay: true,
     autoplaySpeed: 3000,
-    arrows: true
+    arrows: true,
+    beforeChange: (oldIndex: number, newIndex: number) => {
+      // 슬라이드 변경 시 이전 영상 정지, 새 영상 재생
+      const allVideos = document.querySelectorAll('video');
+      allVideos.forEach((video, index) => {
+        if (index === newIndex) {
+          // 새 슬라이드의 영상 재생 (사용자 상호작용 후에만)
+          if (userInteracted) {
+            setTimeout(() => {
+              if (video.paused) {
+                video.play().catch(() => {
+                  console.log('슬라이드 변경 후 자동 재생 실패:', video.src);
+                });
+              }
+            }, 100);
+          }
+        } else {
+          // 다른 슬라이드의 영상 정지
+          video.pause();
+          video.currentTime = 0;
+        }
+      });
+    },
+    afterChange: (currentIndex: number) => {
+      // 슬라이드 변경 완료 후 현재 영상 재생 확인
+      if (userInteracted) {
+        setTimeout(() => {
+          const currentSlide = document.querySelector(`[data-slick-index="${currentIndex}"]`);
+          if (currentSlide) {
+            const video = currentSlide.querySelector('video');
+            if (video && video.paused) {
+              video.play().catch(() => {
+                console.log('슬라이드 변경 완료 후 자동 재생 실패:', video.src);
+              });
+            }
+          }
+        }, 200);
+      }
+    }
   };
 
   return (
@@ -68,21 +259,110 @@ const EcoProductGallery = () => {
           {/* Product Gallery Slider */}
           <div className="bg-white rounded-2xl p-6 shadow-lg">
             <h3 className="text-2xl font-bold text-brand-green mb-6 text-center">Product Gallery</h3>
-            <Slider {...settings}>
-              {slides.map((c, i) => (
-                <div key={i} className="px-4">
-                  <div className="rounded-2xl overflow-hidden shadow-lg bg-white">
-                    <img src={c.img} alt={c.title} className="w-full h-64 object-contain bg-gray-50" />
-                    <div className="p-6">
-                      <h4 className="font-bold text-lg text-brand-dark-green">{c.title}</h4>
-                      <p className="mt-2 text-sm text-neutral-600">
-                        Comfort for you. Relief for the Earth.
-                      </p>
+            
+            {/* 자동재생 안내 메시지 */}
+            {!userInteracted && (
+              <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-center">
+                <p className="text-sm text-blue-700">
+                  💡 영상 자동재생을 위해 페이지를 클릭하거나 스크롤해주세요
+                </p>
+              </div>
+            )}
+            
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-green"></div>
+                <span className="ml-3 text-gray-600">이미지를 불러오는 중...</span>
+              </div>
+            ) : slides.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <p>등록된 제품 이미지가 없습니다.</p>
+              </div>
+            ) : (
+                              <Slider {...settings}>
+                  {slides.map((c, i) => (
+                    <div key={i} className="px-4">
+                      <div className="rounded-2xl overflow-hidden shadow-lg bg-white">
+                        {c.mediaType === 'video' ? (
+                          <video 
+                            src={c.img} 
+                            className="w-full h-64 object-contain bg-gray-50"
+                            controls
+                            preload="auto"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            onLoadedData={(e) => {
+                              // 영상 로드 완료 시 자동재생
+                              const video = e.target as HTMLVideoElement;
+                              if (video.paused) {
+                                video.play().catch(() => {
+                                  console.log('자동 재생이 차단되었습니다:', video.src);
+                                });
+                              }
+                            }}
+                            onCanPlay={(e) => {
+                              // 영상 재생 가능 시 자동재생
+                              const video = e.target as HTMLVideoElement;
+                              if (video.paused) {
+                                video.play().catch(() => {
+                                  console.log('CanPlay 이벤트에서 자동 재생 실패:', video.src);
+                                });
+                              }
+                            }}
+                            onPlay={(e) => {
+                              console.log('영상 재생 시작:', (e.target as HTMLVideoElement).src);
+                            }}
+                            onPause={(e) => {
+                              console.log('영상 일시정지:', (e.target as HTMLVideoElement).src);
+                            }}
+                            onError={(e) => {
+                              // 영상 로드 실패 시 기본 이미지로 대체
+                              const target = e.target as HTMLVideoElement;
+                              target.style.display = 'none';
+                              const img = document.createElement('img');
+                              img.src = biodegradableBag1;
+                              img.className = 'w-full h-64 object-contain bg-gray-50';
+                              img.alt = c.title;
+                              target.parentNode?.appendChild(img);
+                            }}
+                          />
+                        ) : (
+                          <img 
+                            src={c.img} 
+                            alt={c.title} 
+                            className="w-full h-64 object-contain bg-gray-50"
+                            onError={(e) => {
+                              // 이미지 로드 실패 시 기본 이미지로 대체
+                              const target = e.target as HTMLImageElement;
+                              target.src = biodegradableBag1;
+                            }}
+                          />
+                        )}
+                        <div className="p-6">
+                          <h4 className="font-bold text-lg text-brand-dark-green">{c.title}</h4>
+                          <p className="mt-2 text-sm text-neutral-600">
+                            {c.description || 'Comfort for you. Relief for the Earth.'}
+                          </p>
+                          <div className="flex items-center space-x-2 mt-2">
+                            {c.isFromSupabase && (
+                              <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
+                                New
+                              </span>
+                            )}
+                            {c.mediaType === 'video' && (
+                              <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
+                                영상
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
-            </Slider>
+                  ))}
+                </Slider>
+            )}
           </div>
         </div>
       </div>

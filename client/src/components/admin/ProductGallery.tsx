@@ -1,0 +1,462 @@
+import { useState, useEffect } from 'react'
+import { supabase } from '@/lib/supabase'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import { Loader2, Plus, Edit, Trash2, Upload, Image as ImageIcon } from 'lucide-react'
+
+interface ProductMedia {
+  id: string
+  title: string
+  description?: string
+  image_url: string
+  image_path: string
+  file_size?: number
+  mime_type?: string
+  is_active: boolean
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export default function ProductGallery() {
+  const [media, setMedia] = useState<ProductMedia[]>([])
+  const [loading, setLoading] = useState(true)
+  const [uploading, setUploading] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
+  const [editingMedia, setEditingMedia] = useState<ProductMedia | null>(null)
+  
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    file: null as File | null,
+    mediaType: 'image' as 'image' | 'video',
+  })
+
+  // 미디어 목록 가져오기
+  const fetchMedia = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('product_gallery')
+        .select('*')
+        .order('sort_order', { ascending: true })
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+      
+      // 디버깅: 데이터 구조 확인
+      console.log('가져온 미디어 데이터:', data);
+      
+      setMedia(data || [])
+    } catch (error) {
+      console.error('미디어 목록을 가져오는데 실패했습니다:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    fetchMedia()
+  }, [])
+
+  // 미디어 업로드
+  const handleUpload = async () => {
+    if (!formData.file || !formData.title.trim()) return
+
+    // 파일 크기 체크
+    const maxSize = formData.mediaType === 'image' ? 10 * 1024 * 1024 : 50 * 1024 * 1024; // 10MB or 50MB
+    if (formData.file.size > maxSize) {
+      alert(`파일 크기가 너무 큽니다. ${formData.mediaType === 'image' ? '이미지는 10MB' : '영상은 50MB'} 이하여야 합니다.`);
+      return;
+    }
+
+    setUploading(true)
+    try {
+      const fileExt = formData.file.name.split('.').pop()
+      const fileName = `${Math.random()}.${fileExt}`
+      const filePath = `product-images/${fileName}`
+
+      // Storage에 파일 업로드
+      const { error: uploadError } = await supabase.storage
+        .from('product-images')
+        .upload(filePath, formData.file)
+
+      if (uploadError) throw uploadError
+
+      // Public URL 가져오기
+      const { data: { publicUrl } } = supabase.storage
+        .from('product-images')
+        .getPublicUrl(filePath)
+
+      // 미디어 타입 결정
+      const mediaType = formData.file.type.startsWith('video/') ? 'video' : 'image'
+
+      // 데이터베이스에 미디어 정보 저장
+      const { error: insertError } = await supabase
+        .from('product_gallery')
+        .insert({
+          title: formData.title,
+          description: formData.description,
+          image_url: publicUrl,
+          image_path: filePath,
+          file_size: formData.file.size,
+          mime_type: formData.file.type,
+          is_active: true,
+          sort_order: media.length,
+        })
+
+      if (insertError) throw insertError
+
+      // 폼 초기화 및 미디어 목록 새로고침
+      setFormData({ title: '', description: '', file: null, mediaType: 'image' })
+      setIsDialogOpen(false)
+      fetchMedia()
+    } catch (error) {
+      console.error('미디어 업로드에 실패했습니다:', error)
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  // 미디어 수정
+  const handleEdit = async () => {
+    if (!editingMedia) return
+
+    try {
+      const { error } = await supabase
+        .from('product_gallery')
+        .update({
+          title: formData.title,
+          description: formData.description,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', editingMedia.id)
+
+      if (error) throw error
+
+      setEditingMedia(null)
+      setFormData({ title: '', description: '', file: null, mediaType: 'image' })
+      fetchMedia()
+    } catch (error) {
+      console.error('미디어 수정에 실패했습니다:', error)
+    }
+  }
+
+  // 미디어 삭제
+  const handleDelete = async (mediaId: string, mediaPath: string) => {
+    if (!confirm('정말로 이 미디어를 삭제하시겠습니까?')) return
+
+    try {
+      // Storage에서 파일 삭제
+      const { error: storageError } = await supabase.storage
+        .from('product-images')
+        .remove([mediaPath])
+
+      if (storageError) throw storageError
+
+      // 데이터베이스에서 미디어 정보 삭제
+      const { error: deleteError } = await supabase
+        .from('product_gallery')
+        .delete()
+        .eq('id', mediaId)
+
+      if (deleteError) throw deleteError
+
+      fetchMedia()
+    } catch (error) {
+      console.error('미디어 삭제에 실패했습니다:', error)
+    }
+  }
+
+  // 미디어 활성화/비활성화
+  const toggleActive = async (mediaId: string, currentStatus: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('product_gallery')
+        .update({ 
+          is_active: !currentStatus,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', mediaId)
+
+      if (error) throw error
+      fetchMedia()
+    } catch (error) {
+      console.error('상태 변경에 실패했습니다:', error)
+    }
+  }
+
+  const openEditDialog = (media: ProductMedia) => {
+    setEditingMedia(media)
+    setFormData({
+      title: media.title,
+      description: media.description || '',
+      file: null,
+      mediaType: media.media_type,
+    })
+  }
+
+  const closeEditDialog = () => {
+    setEditingMedia(null)
+    setFormData({ title: '', description: '', file: null, mediaType: 'image' })
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-8">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* 업로드 버튼 */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-lg font-medium text-gray-900">제품 미디어</h3>
+          <p className="text-sm text-gray-500">
+            총 {media.length}개의 미디어가 등록되어 있습니다.
+          </p>
+        </div>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="flex items-center space-x-2">
+              <Plus className="h-4 w-4" />
+              <span>미디어 업로드</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>새 미디어 업로드</DialogTitle>
+              <DialogDescription>
+                제품 이미지나 영상을 업로드하고 정보를 입력하세요.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="title">제목 *</Label>
+                <Input
+                  id="title"
+                  value={formData.title}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                  placeholder="미디어 제목을 입력하세요"
+                />
+              </div>
+              <div>
+                <Label htmlFor="description">설명</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="미디어에 대한 설명을 입력하세요"
+                  rows={3}
+                />
+              </div>
+              <div>
+                <Label htmlFor="mediaType">미디어 타입</Label>
+                <select
+                  id="mediaType"
+                  value={formData.mediaType}
+                  onChange={(e) => setFormData({ ...formData, mediaType: e.target.value as 'image' | 'video' })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="image">이미지</option>
+                  <option value="video">영상</option>
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="file">파일 *</Label>
+                <Input
+                  id="file"
+                  type="file"
+                  accept={formData.mediaType === 'image' ? 'image/*' : 'video/*'}
+                  onChange={(e) => setFormData({ ...formData, file: e.target.files?.[0] || null })}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  {formData.mediaType === 'image' 
+                    ? '지원 형식: JPG, PNG, GIF, WebP (최대 10MB)' 
+                    : '지원 형식: MP4, WebM, MOV, AVI (최대 50MB)'
+                  }
+                </p>
+              </div>
+              <div className="flex justify-end space-x-2">
+                <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                  취소
+                </Button>
+                <Button onClick={handleUpload} disabled={uploading || !formData.file || !formData.title.trim()}>
+                  {uploading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      업로드 중...
+                    </>
+                  ) : (
+                    '업로드'
+                  )}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      {/* 미디어 목록 */}
+      {media.length === 0 ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <ImageIcon className="h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">미디어가 없습니다</h3>
+            <p className="text-sm text-gray-500 mb-4">
+              첫 번째 제품 미디어를 업로드해보세요.
+            </p>
+            <Button onClick={() => setIsDialogOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              미디어 업로드
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {media.map((item) => (
+            <Card key={item.id} className="overflow-hidden">
+              <div className="aspect-square overflow-hidden">
+                {item.mime_type && item.mime_type.startsWith('video/') ? (
+                  <video
+                    src={item.image_url}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                    controls
+                    preload="metadata"
+                    onError={(e) => {
+                      console.error('영상 로드 실패:', item.image_url);
+                      const target = e.target as HTMLVideoElement;
+                      target.style.display = 'none';
+                      const img = document.createElement('img');
+                      img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNjBDMTEwLjQ1NyA2MCAxMTkuMDQzIDY4LjU4NTggMTE5LjA0MyA3OVYxMjFDMTE5LjA0MyAxMzEuNDE0IDExMC40NTcgMTQwIDEwMCAxNDBDODkuNTQzIDg5LjU4NTggODAuOTU3IDgxIDgwLjk1NyA3OVYxMjFDODAuOTU3IDY4LjU4NTggODkuNTQzIDYwIDEwMCA2MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                      img.className = 'w-full h-full object-contain bg-gray-100';
+                      img.alt = '영상 로드 실패';
+                      target.parentNode?.appendChild(img);
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={item.image_url}
+                    alt={item.title}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-200"
+                    onError={(e) => {
+                      console.error('이미지 로드 실패:', item.image_url, item);
+                      const target = e.target as HTMLImageElement;
+                      target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNjBDMTEwLjQ1NyA2MCAxMTkuMDQzIDY4LjU4NTggMTE5LjA0MyA3OVYxMjFDMTE5LjA0MyAxMzEuNDE0IDExMC40NTcgMTQwIDEwMCAxNDBDODkuNTQzIDg5LjU4NTggODAuOTU3IDgxIDgwLjk1NyA3OVYxMjFDODAuOTU3IDY4LjU4NTggODkuNTQzIDYwIDEwMCA2MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
+                    }}
+                  />
+                )}
+              </div>
+              <CardHeader className="p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <CardTitle className="text-base">{item.title}</CardTitle>
+                    {item.description && (
+                      <CardDescription className="mt-1 text-sm">
+                        {item.description}
+                      </CardDescription>
+                    )}
+                    <div className="mt-2">
+                      <span className={`inline-block px-2 py-1 text-xs rounded-full ${
+                        item.mime_type && item.mime_type.startsWith('video/')
+                          ? 'bg-purple-100 text-purple-800' 
+                          : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {item.mime_type && item.mime_type.startsWith('video/') ? '영상' : '이미지'}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2 ml-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => toggleActive(item.id, item.is_active)}
+                      className={item.is_active ? 'bg-green-50 text-green-700 border-green-200' : ''}
+                    >
+                      {item.is_active ? '활성' : '비활성'}
+                    </Button>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-4 pt-0">
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-3">
+                  <span>{new Date(item.created_at).toLocaleDateString('ko-KR')}</span>
+                  {item.file_size && (
+                    <span>{(item.file_size / 1024 / 1024).toFixed(2)} MB</span>
+                  )}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => openEditDialog(item)}
+                    className="flex-1"
+                  >
+                    <Edit className="h-4 w-4 mr-2" />
+                    수정
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDelete(item.id, item.image_path || '')}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {/* 수정 다이얼로그 */}
+      <Dialog open={!!editingMedia} onOpenChange={() => closeEditDialog()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>미디어 정보 수정</DialogTitle>
+            <DialogDescription>
+              미디어의 제목과 설명을 수정할 수 있습니다.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="edit-title">제목 *</Label>
+              <Input
+                id="edit-title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="미디어 제목을 입력하세요"
+              />
+            </div>
+            <div>
+              <Label htmlFor="edit-description">설명</Label>
+              <Textarea
+                id="edit-description"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="미디어에 대한 설명을 입력하세요"
+                rows={3}
+              />
+            </div>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={closeEditDialog}>
+                취소
+              </Button>
+              <Button onClick={handleEdit} disabled={!formData.title.trim()}>
+                수정
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </div>
+  )
+}
