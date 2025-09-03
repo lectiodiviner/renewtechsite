@@ -3,7 +3,7 @@ import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Loader2, LogOut, Image, Settings, BarChart3 } from 'lucide-react'
+import { Loader2, LogOut, Image, Settings } from 'lucide-react'
 import ProductGallery from '@/components/admin/ProductGallery'
 
 export default function AdminDashboard() {
@@ -64,14 +64,10 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <Tabs defaultValue="gallery" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="gallery" className="flex items-center space-x-2">
                 <Image className="h-4 w-4" />
                 <span>Product Gallery</span>
-              </TabsTrigger>
-              <TabsTrigger value="analytics" className="flex items-center space-x-2">
-                <BarChart3 className="h-4 w-4" />
-                <span>통계</span>
               </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center space-x-2">
                 <Settings className="h-4 w-4" />
@@ -89,43 +85,7 @@ export default function AdminDashboard() {
               <ProductGallery />
             </TabsContent>
 
-            <TabsContent value="analytics" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">총 이미지 수</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">0</div>
-                    <p className="text-xs text-muted-foreground">
-                      등록된 제품 이미지
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">활성 이미지</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">0</div>
-                    <p className="text-xs text-muted-foreground">
-                      활성화된 이미지
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">총 용량</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">0 MB</div>
-                    <p className="text-xs text-muted-foreground">
-                      업로드된 파일 용량
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </TabsContent>
+
 
             <TabsContent value="settings" className="space-y-6">
               <Card>

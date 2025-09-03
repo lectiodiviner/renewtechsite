@@ -6,13 +6,6 @@ import { apiRequest } from "@/lib/queryClient";
 import { type QnaSubmission, type InsertQnaSubmission } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
-import clubavoltaNature from "@assets/KakaoTalk_20250821_115422394_01_1755766655585.jpg";
-import clubavoltaLakeside from "@assets/KakaoTalk_20250821_115422394_07_1755766655585.jpg";
-import clubavoltaUrban from "@assets/KakaoTalk_20250821_115422394_12_1755766655586.jpg";
-import biodegradableBag1 from "@assets/KakaoTalk_20250825_121348376_1756109054508.png";
-import biodegradableBag2 from "@assets/KakaoTalk_20250825_121524132_1756109054509.png";
-import biodegradableBag3 from "@assets/KakaoTalk_20250825_121631471_1756109054509.png";
-import waterproofPaper from "@assets/KakaoTalk_20250825_205747637_1756123331624.png";
 
 interface SlideItem {
   title: string;
@@ -24,14 +17,7 @@ interface SlideItem {
 }
 
 const EcoProductGallery = () => {
-  const [slides, setSlides] = useState<SlideItem[]>([
-    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaNature, category: 'Recycled Kraft Paper Shopping Bag', description: 'Comfort for you. Relief for the Earth.' },
-    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaLakeside, category: 'Recycled Kraft Paper Shopping Bag', description: 'Comfort for you. Relief for the Earth.' },
-    { title: 'Recycled Kraft Paper Shopping Bag', img: clubavoltaUrban, category: 'Recycled Kraft Paper Shopping Bag', description: 'Comfort for you. Relief for the Earth.' },
-    { title: 'Biodegradable shopping bag', img: biodegradableBag1, category: 'Biodegradable shopping bag', description: 'Comfort for you. Relief for the Earth.' },
-    { title: 'Biodegradable shopping bag', img: biodegradableBag2, category: 'Biodegradable shopping bag', description: 'Comfort for you. Relief for the Earth.' },
-    { title: 'Biodegradable shopping bag', img: biodegradableBag3, category: 'Biodegradable shopping bag', description: 'Comfort for you. Relief for the Earth.' },
-  ]);
+  const [slides, setSlides] = useState<SlideItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [userInteracted, setUserInteracted] = useState(false);
 
@@ -92,7 +78,7 @@ const EcoProductGallery = () => {
           // 디버깅: 데이터 구조 확인
           console.log('Supabase에서 가져온 데이터:', data);
           
-          // Supabase 미디어를 기존 이미지와 합치기
+          // Supabase 미디어를 슬라이드로 변환
           const supabaseSlides: SlideItem[] = data.map((item) => ({
             title: item.title,
             img: item.image_url,
@@ -104,9 +90,8 @@ const EcoProductGallery = () => {
 
           console.log('변환된 슬라이드:', supabaseSlides);
 
-          // 기존 이미지와 Supabase 미디어를 합치기
-          const combinedSlides = [...supabaseSlides, ...slides];
-          setSlides(combinedSlides);
+          // Supabase 미디어만 사용
+          setSlides(supabaseSlides);
         }
       } catch (error) {
         console.error('이미지 가져오기 실패:', error);
@@ -322,7 +307,7 @@ const EcoProductGallery = () => {
                               const target = e.target as HTMLVideoElement;
                               target.style.display = 'none';
                               const img = document.createElement('img');
-                              img.src = biodegradableBag1;
+                              img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNjBDMTEwLjQ1NyA2MCAxMTkuMDQzIDY4LjU4NTggMTE5LjA0MyA3OVYxMjFDMTE5LjA0MyAxMzEuNDE0IDExMC40NTcgMTQwIDEwMCAxNDBDODkuNTQzIDg5LjU4NTggODAuOTU3IDgxIDgwLjk1NyA3OVYxMjFDODAuOTU3IDY4LjU4NTggODkuNTQzIDYwIDEwMCA2MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                               img.className = 'w-full h-64 object-contain bg-gray-50';
                               img.alt = c.title;
                               target.parentNode?.appendChild(img);
@@ -336,7 +321,7 @@ const EcoProductGallery = () => {
                             onError={(e) => {
                               // 이미지 로드 실패 시 기본 이미지로 대체
                               const target = e.target as HTMLImageElement;
-                              target.src = biodegradableBag1;
+                              target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgdmlld0JveD0iMCAwIDIwMCAyMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xMDAgNjBDMTEwLjQ1NyA2MCAxMTkuMDQzIDY4LjU4NTggMTE5LjA0MyA3OVYxMjFDMTE5LjA0MyAxMzEuNDE0IDExMC40NTcgMTQwIDEwMCAxNDBDODkuNTQzIDg5LjU4NTggODAuOTU3IDgxIDgwLjk1NyA3OVYxMjFDODAuOTU3IDY4LjU4NTggODkuNTQzIDYwIDEwMCA2MFoiIGZpbGw9IiM5Q0EzQUYiLz4KPC9zdmc+';
                             }}
                           />
                         )}
@@ -759,7 +744,7 @@ const Home = () => {
             
             <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300" data-testid="solution-card-packaging">
               <img 
-                src={waterproofPaper} 
+                src="https://images.unsplash.com/photo-1586075010923-2dd4570fb338?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600" 
                 alt="Waterproof paper demonstration" 
                 className="w-full h-48 object-cover rounded-xl mb-6"
               />

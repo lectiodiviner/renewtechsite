@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { Loader2, Plus, Edit, Trash2, Upload, Image as ImageIcon } from 'lucide-react'
+import { Loader2, Plus, Edit, Trash2, Upload, Image as ImageIcon, ArrowUp, ArrowDown } from 'lucide-react'
 
 interface ProductMedia {
   id: string
@@ -190,13 +190,81 @@ export default function ProductGallery() {
     }
   }
 
+  // 순서 변경 함수 - 전체 재정렬 방식
+  const moveUp = async (mediaId: string, currentIndex: number) => {
+    if (currentIndex === 0) return // 이미 맨 위에 있음
+    
+    try {
+      // 새로운 순서 배열 생성
+      const newOrder = [...media]
+      const currentItem = newOrder[currentIndex]
+      const previousItem = newOrder[currentIndex - 1]
+      
+      // 배열에서 위치 교환
+      newOrder[currentIndex] = previousItem
+      newOrder[currentIndex - 1] = currentItem
+      
+      // 새로운 순서로 데이터베이스 업데이트
+      for (let i = 0; i < newOrder.length; i++) {
+        const { error } = await supabase
+          .from('product_gallery')
+          .update({ 
+            sort_order: i,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', newOrder[i].id)
+        
+        if (error) throw error
+      }
+      
+      fetchMedia()
+    } catch (error) {
+      console.error('순서 변경에 실패했습니다:', error)
+    }
+  }
+
+  const moveDown = async (mediaId: string, currentIndex: number) => {
+    if (currentIndex === media.length - 1) return // 이미 맨 아래에 있음
+    
+    try {
+      // 새로운 순서 배열 생성
+      const newOrder = [...media]
+      const currentItem = newOrder[currentIndex]
+      const nextItem = newOrder[currentIndex + 1]
+      
+      // 배열에서 위치 교환
+      const temp = newOrder[currentIndex]
+      newOrder[currentIndex] = newOrder[currentIndex + 1]
+      newOrder[currentIndex + 1] = temp
+      
+      // 새로운 순서로 데이터베이스 업데이트
+      for (let i = 0; i < newOrder.length; i++) {
+        const { error } = await supabase
+          .from('product_gallery')
+          .update({ 
+            sort_order: i,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', newOrder[i].id)
+        
+        if (error) throw error
+      }
+      
+      fetchMedia()
+    } catch (error) {
+      console.error('순서 변경에 실패했습니다:', error)
+    }
+  }
+
+
+
   const openEditDialog = (media: ProductMedia) => {
     setEditingMedia(media)
     setFormData({
       title: media.title,
       description: media.description || '',
       file: null,
-      mediaType: media.media_type,
+      mediaType: (media.mime_type && media.mime_type.startsWith('video/') ? 'video' : 'image') as 'image' | 'video',
     })
   }
 
@@ -224,7 +292,7 @@ export default function ProductGallery() {
           </p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
+            <DialogTrigger asChild>
             <Button className="flex items-center space-x-2">
               <Plus className="h-4 w-4" />
               <span>미디어 업로드</span>
@@ -357,6 +425,12 @@ export default function ProductGallery() {
               <CardHeader className="p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
+                    <div className="mb-2">
+                      <div className="text-xs text-gray-500 mb-1">이미지 순서</div>
+                      <span className="inline-flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-600 text-xs font-medium rounded-full">
+                        {media.findIndex(m => m.id === item.id) + 1}
+                      </span>
+                    </div>
                     <CardTitle className="text-base">{item.title}</CardTitle>
                     {item.description && (
                       <CardDescription className="mt-1 text-sm">
@@ -391,6 +465,28 @@ export default function ProductGallery() {
                   {item.file_size && (
                     <span>{(item.file_size / 1024 / 1024).toFixed(2)} MB</span>
                   )}
+                </div>
+                <div className="flex items-center space-x-2 mb-3">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => moveUp(item.id, media.findIndex(m => m.id === item.id))}
+                    disabled={media.findIndex(m => m.id === item.id) === 0}
+                    className="px-2"
+                    title="위로 이동"
+                  >
+                    <ArrowUp className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => moveDown(item.id, media.findIndex(m => m.id === item.id))}
+                    disabled={media.findIndex(m => m.id === item.id) === media.length - 1}
+                    className="px-2"
+                    title="아래로 이동"
+                  >
+                    <ArrowDown className="h-4 w-4" />
+                  </Button>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
