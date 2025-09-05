@@ -36,9 +36,6 @@ export default function AdminLogin() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">Admin 로그인</CardTitle>
-          <CardDescription>
-            Supabase 계정으로 로그인하여 관리자 기능을 사용하세요
-          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -85,10 +82,7 @@ export default function AdminLogin() {
             </Button>
           </form>
           
-          <div className="mt-4 text-center text-sm text-gray-600">
-            <p>Admin 계정: lectiodiviner@gmail.com</p>
-            <p className="mt-1">Supabase에서 생성한 계정으로만 로그인 가능합니다.</p>
-          </div>
+
         </CardContent>
       </Card>
     </div>
