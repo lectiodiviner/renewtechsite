@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import Slider from "react-slick";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { apiRequest } from "@/lib/queryClient";
-import { type QnaSubmission, type InsertQnaSubmission } from "@shared/schema";
+import { type InsertQnaSubmission } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
 
@@ -330,18 +328,6 @@ const EcoProductGallery = () => {
                           <p className="mt-2 text-sm text-neutral-600">
                             {c.description || 'Comfort for you. Relief for the Earth.'}
                           </p>
-                          <div className="flex items-center space-x-2 mt-2">
-                            {c.isFromSupabase && (
-                              <span className="inline-block px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">
-                                New
-                              </span>
-                            )}
-                            {c.mediaType === 'video' && (
-                              <span className="inline-block px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
-                                영상
-                              </span>
-                            )}
-                          </div>
                         </div>
                       </div>
                     </div>
@@ -363,35 +349,7 @@ const QnaSection = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
-  const queryClient = useQueryClient();
 
-  const { data: qnaSubmissions = [], isLoading } = useQuery<QnaSubmission[]>({
-    queryKey: ["/api/qna"],
-  });
-
-  const submitQuestionMutation = useMutation({
-    mutationFn: async (data: InsertQnaSubmission) => {
-      const response = await apiRequest("POST", "/api/qna", data);
-      return response.json();
-    },
-    onSuccess: () => {
-      setFormData({ name: "", email: "", question: "" });
-      setIsSubmitting(false);
-      toast({
-        title: "Question submitted!",
-        description: "We will get back to you soon.",
-      });
-      queryClient.invalidateQueries({ queryKey: ["/api/qna"] });
-    },
-    onError: () => {
-      setIsSubmitting(false);
-      toast({
-        title: "An error occurred",
-        description: "Please try again.",
-        variant: "destructive",
-      });
-    }
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -403,7 +361,16 @@ const QnaSection = () => {
       return;
     }
     setIsSubmitting(true);
-    submitQuestionMutation.mutate(formData);
+    
+    // Simulate form submission without actually saving
+    setTimeout(() => {
+      setFormData({ name: "", email: "", question: "" });
+      setIsSubmitting(false);
+      toast({
+        title: "Question submitted!",
+        description: "We will get back to you soon.",
+      });
+    }, 1000);
   };
 
   const handleInputChange = (field: keyof InsertQnaSubmission) => (
@@ -420,9 +387,9 @@ const QnaSection = () => {
           <p className="text-xl text-gray-700" data-testid="qna-title-english">Have questions? Send them to us</p>
         </div>
         
-        <div className="grid lg:grid-cols-2 gap-12">
-          {/* Question Form */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-form">
+         <div className="max-w-2xl mx-auto">
+           {/* Question Form */}
+           <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-form">
             <h3 className="text-2xl font-bold text-brand-green mb-6">Ask a Question</h3>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
@@ -484,55 +451,6 @@ const QnaSection = () => {
             </form>
           </div>
           
-          {/* Q&A List */}
-          <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-list">
-            <h3 className="text-2xl font-bold text-brand-green mb-6">Recent Q&A</h3>
-            
-            {isLoading ? (
-              <div className="space-y-4">
-                <div className="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
-                <div className="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
-                <div className="animate-pulse bg-gray-200 h-20 rounded-lg"></div>
-              </div>
-            ) : qnaSubmissions.length === 0 ? (
-              <p className="text-gray-500 text-center py-8" data-testid="no-questions">No questions registered yet.</p>
-            ) : (
-              <div className="space-y-6 max-h-96 overflow-y-auto">
-                {qnaSubmissions.map((submission) => (
-                  <div key={submission.id} className="border-b border-gray-200 last:border-b-0 pb-6 last:pb-0" data-testid={`qna-item-${submission.id}`}>
-                    <div className="mb-3">
-                      <div className="flex items-center justify-between mb-2">
-                        <span className="font-medium text-gray-900">{submission.name}</span>
-                        <span className={`text-xs px-2 py-1 rounded-full ${
-                          submission.isAnswered 
-                            ? "bg-green-100 text-green-800" 
-                            : "bg-yellow-100 text-yellow-800"
-                        }`}>
-                          {submission.isAnswered ? "Answered" : "Pending"}
-                        </span>
-                      </div>
-                      <p className="text-gray-700 text-sm">{submission.question}</p>
-                      <span className="text-xs text-gray-500">
-                        {new Date(submission.createdAt).toLocaleDateString('ko-KR')}
-                      </span>
-                    </div>
-                    
-                    {submission.answer && (
-                      <div className="bg-brand-beige/30 rounded-lg p-4">
-                        <p className="text-sm font-medium text-brand-dark-green mb-1">Answer:</p>
-                        <p className="text-sm text-gray-700">{submission.answer}</p>
-                        {submission.answeredAt && (
-                          <span className="text-xs text-gray-500">
-                            {new Date(submission.answeredAt).toLocaleDateString('ko-KR')}
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </section>

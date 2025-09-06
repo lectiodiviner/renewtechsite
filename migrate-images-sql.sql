@@ -18,7 +18,7 @@ INSERT INTO product_gallery (
 (
   'Recycled Kraft Paper Shopping Bag - Nature',
   'Comfort for you. Relief for the Earth.',
-  'https://gzxqxurhutoumqoaxnow.supabase.co/storage/v1/object/public/product-images/migrated-kraft-nature.jpg',
+  'https://cktutvtbfrdnxkopeodj.supabase.co/storage/v1/object/public/product-images/migrated-kraft-nature.jpg',
   'product-images/migrated-kraft-nature.jpg',
   9742099,
   'image/jpeg',
@@ -28,7 +28,7 @@ INSERT INTO product_gallery (
 (
   'Recycled Kraft Paper Shopping Bag - Lakeside',
   'Comfort for you. Relief for the Earth.',
-  'https://gzxqxurhutoumqoaxnow.supabase.co/storage/v1/object/public/product-images/migrated-kraft-lakeside.jpg',
+  'https://cktutvtbfrdnxkopeodj.supabase.co/storage/v1/object/public/product-images/migrated-kraft-lakeside.jpg',
   'product-images/migrated-kraft-lakeside.jpg',
   9836575,
   'image/jpeg',
@@ -38,7 +38,7 @@ INSERT INTO product_gallery (
 (
   'Recycled Kraft Paper Shopping Bag - Urban',
   'Comfort for you. Relief for the Earth.',
-  'https://gzxqxurhutoumqoaxnow.supabase.co/storage/v1/object/public/product-images/migrated-kraft-urban.jpg',
+  'https://cktutvtbfrdnxkopeodj.supabase.co/storage/v1/object/public/product-images/migrated-kraft-urban.jpg',
   'product-images/migrated-kraft-urban.jpg',
   9881920,
   'image/jpeg',
@@ -48,7 +48,7 @@ INSERT INTO product_gallery (
 (
   'Biodegradable Shopping Bag - Style 1',
   'Comfort for you. Relief for the Earth.',
-  'https://gzxqxurhutoumqoaxnow.supabase.co/storage/v1/object/public/product-images/migrated-biodegradable-1.png',
+  'https://cktutvtbfrdnxkopeodj.supabase.co/storage/v1/object/public/product-images/migrated-biodegradable-1.png',
   'product-images/migrated-biodegradable-1.png',
   636683,
   'image/png',
@@ -58,7 +58,7 @@ INSERT INTO product_gallery (
 (
   'Biodegradable Shopping Bag - Style 2',
   'Comfort for you. Relief for the Earth.',
-  'https://gzxqxurhutoumqoaxnow.supabase.co/storage/v1/object/public/product-images/migrated-biodegradable-2.png',
+  'https://cktutvtbfrdnxkopeodj.supabase.co/storage/v1/object/public/product-images/migrated-biodegradable-2.png',
   'product-images/migrated-biodegradable-2.png',
   444673,
   'image/png',
@@ -68,7 +68,7 @@ INSERT INTO product_gallery (
 (
   'Biodegradable Shopping Bag - Style 3',
   'Comfort for you. Relief for the Earth.',
-  'https://gzxqxurhutoumqoaxnow.supabase.co/storage/v1/object/public/product-images/migrated-biodegradable-3.png',
+  'https://cktutvtbfrdnxkopeodj.supabase.co/storage/v1/object/public/product-images/migrated-biodegradable-3.png',
   'product-images/migrated-biodegradable-3.png',
   1063567,
   'image/png',
@@ -78,7 +78,7 @@ INSERT INTO product_gallery (
 (
   'Waterproof Paper Product',
   'Comfort for you. Relief for the Earth.',
-  'https://gzxqxurhutoumqoaxnow.supabase.co/storage/v1/object/public/product-images/migrated-waterproof.png',
+  'https://cktutvtbfrdnxkopeodj.supabase.co/storage/v1/object/public/product-images/migrated-waterproof.png',
   'product-images/migrated-waterproof.png',
   156200,
   'image/png',

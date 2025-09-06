@@ -8,8 +8,8 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Supabase 설정
-const supabaseUrl = 'https://gzxqxurhutoumqoaxnow.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd6eHF4dXJodXRvdW1xb2F4bm93Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTY4OTU2MTAsImV4cCI6MjA3MjQ3MTYxMH0.9YUhly_uHsH0VphzK0oW62ulE0ZIEYdPXMvIYNVfnlM';
+const supabaseUrl = 'https://cktutvtbfrdnxkopeodj.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrdHV0dnRiZnJkbnhrb3Blb2RqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwNjgxMjYsImV4cCI6MjA3MjY0NDEyNn0.Zke_VOl_lKHsW1ruYE_ApQcZ6sZwBKiYClIvb0FJFGU';
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 

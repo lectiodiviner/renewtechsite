@@ -437,15 +437,6 @@ export default function ProductGallery() {
                         {item.description}
                       </CardDescription>
                     )}
-                    <div className="mt-2">
-                      <span className={`inline-block px-2 py-1 text-xs rounded-full ${
-                        item.mime_type && item.mime_type.startsWith('video/')
-                          ? 'bg-purple-100 text-purple-800' 
-                          : 'bg-blue-100 text-blue-800'
-                      }`}>
-                        {item.mime_type && item.mime_type.startsWith('video/') ? '영상' : '이미지'}
-                      </span>
-                    </div>
                   </div>
                   <div className="flex items-center space-x-2 ml-2">
                     <Button
