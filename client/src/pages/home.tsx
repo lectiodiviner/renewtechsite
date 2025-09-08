@@ -4,6 +4,7 @@ import Slider from "react-slick";
 import { type InsertQnaSubmission } from "@shared/schema";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/lib/supabase";
+import QnAForm from "@/components/QnAForm";
 
 interface SlideItem {
   title: string;
@@ -342,43 +343,6 @@ const EcoProductGallery = () => {
 };
 
 const QnaSection = () => {
-  const [formData, setFormData] = useState<InsertQnaSubmission>({
-    name: "",
-    email: "",
-    question: ""
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { toast } = useToast();
-
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.name || !formData.email || !formData.question) {
-      toast({
-        title: "Please fill in all fields",
-        variant: "destructive",
-      });
-      return;
-    }
-    setIsSubmitting(true);
-    
-    // Simulate form submission without actually saving
-    setTimeout(() => {
-      setFormData({ name: "", email: "", question: "" });
-      setIsSubmitting(false);
-      toast({
-        title: "Question submitted!",
-        description: "We will get back to you soon.",
-      });
-    }, 1000);
-  };
-
-  const handleInputChange = (field: keyof InsertQnaSubmission) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData(prev => ({ ...prev, [field]: e.target.value }));
-  };
-
   return (
     <section id="qna" className="py-20 bg-brand-beige" data-testid="qna-section">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -387,71 +351,7 @@ const QnaSection = () => {
           <p className="text-xl text-gray-700" data-testid="qna-title-english">Have questions? Send them to us</p>
         </div>
         
-         <div className="max-w-2xl mx-auto">
-           {/* Question Form */}
-           <div className="bg-white rounded-2xl p-8 shadow-lg" data-testid="qna-form">
-            <h3 className="text-2xl font-bold text-brand-green mb-6">Ask a Question</h3>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Name *
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  value={formData.name}
-                  onChange={handleInputChange("name")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors"
-                  placeholder="Enter your name"
-                  data-testid="input-name"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                  Email *
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleInputChange("email")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors"
-                  placeholder="Enter your email"
-                  data-testid="input-email"
-                  required
-                />
-              </div>
-              
-              <div>
-                <label htmlFor="question" className="block text-sm font-medium text-gray-700 mb-2">
-                  Question *
-                </label>
-                <textarea
-                  id="question"
-                  rows={4}
-                  value={formData.question}
-                  onChange={handleInputChange("question")}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-green focus:border-transparent transition-colors resize-none"
-                  placeholder="Please describe your question in detail"
-                  data-testid="textarea-question"
-                  required
-                />
-              </div>
-              
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-brand-green hover:bg-brand-dark-green disabled:opacity-50 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200"
-                data-testid="button-submit-question"
-              >
-                {isSubmitting ? "Submitting..." : "Submit Question"}
-              </button>
-            </form>
-          </div>
-          
-        </div>
+        <QnAForm />
       </div>
     </section>
   );

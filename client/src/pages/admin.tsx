@@ -1,13 +1,17 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useAdminAuth } from '@/hooks/use-admin-auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Loader2, LogOut, Image, Settings } from 'lucide-react'
+import { Loader2, LogOut, Image, Settings, MessageSquare } from 'lucide-react'
 import ProductGallery from '@/components/admin/ProductGallery'
+import QnAList from '@/components/admin/QnAList'
+import QnADetail from '@/components/admin/QnADetail'
+import { type QnaSubmission } from '@shared/schema'
 
 export default function AdminDashboard() {
   const { user, isAdmin, loading, signOut } = useAdminAuth()
+  const [selectedQuestion, setSelectedQuestion] = useState<QnaSubmission | null>(null)
 
   useEffect(() => {
     if (!loading && !isAdmin) {
@@ -19,6 +23,18 @@ export default function AdminDashboard() {
   const handleSignOut = async () => {
     await signOut()
     window.location.href = '/admin-login'
+  }
+
+  const handleSelectQuestion = (question: QnaSubmission) => {
+    setSelectedQuestion(question)
+  }
+
+  const handleBackToList = () => {
+    setSelectedQuestion(null)
+  }
+
+  const handleAnswerSubmitted = () => {
+    setSelectedQuestion(null)
   }
 
   if (loading) {
@@ -64,10 +80,14 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div className="px-4 py-6 sm:px-0">
           <Tabs defaultValue="gallery" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="gallery" className="flex items-center space-x-2">
                 <Image className="h-4 w-4" />
                 <span>Product Gallery</span>
+              </TabsTrigger>
+              <TabsTrigger value="qna" className="flex items-center space-x-2">
+                <MessageSquare className="h-4 w-4" />
+                <span>Q&A Management</span>
               </TabsTrigger>
               <TabsTrigger value="settings" className="flex items-center space-x-2">
                 <Settings className="h-4 w-4" />
@@ -83,6 +103,24 @@ export default function AdminDashboard() {
                 </p>
               </div>
               <ProductGallery />
+            </TabsContent>
+
+            <TabsContent value="qna" className="space-y-6">
+              <div>
+                <h2 className="text-lg font-medium text-gray-900">Q&A Management</h2>
+                <p className="mt-1 text-sm text-gray-500">
+                  View and respond to customer inquiries.
+                </p>
+              </div>
+              {selectedQuestion ? (
+                <QnADetail
+                  question={selectedQuestion}
+                  onBack={handleBackToList}
+                  onAnswerSubmitted={handleAnswerSubmitted}
+                />
+              ) : (
+                <QnAList onSelectQuestion={handleSelectQuestion} />
+              )}
             </TabsContent>
 
 

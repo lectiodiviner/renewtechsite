@@ -8,17 +8,17 @@ CREATE TABLE IF NOT EXISTS users (
   password TEXT NOT NULL
 );
 
--- 2. qna_submissions 테이블 생성 (현재 사용하지 않음 - 주석 처리)
--- CREATE TABLE IF NOT EXISTS qna_submissions (
---   id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
---   name TEXT NOT NULL,
---   email TEXT NOT NULL,
---   question TEXT NOT NULL,
---   answer TEXT,
---   is_answered BOOLEAN DEFAULT false NOT NULL,
---   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
---   answered_at TIMESTAMP WITH TIME ZONE
--- );
+-- 2. qna_submissions 테이블 생성
+CREATE TABLE IF NOT EXISTS qna_submissions (
+  id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  question TEXT NOT NULL,
+  answer TEXT,
+  is_answered BOOLEAN DEFAULT false NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+  answered_at TIMESTAMP WITH TIME ZONE
+);
 
 -- 3. product_gallery 테이블 생성
 CREATE TABLE IF NOT EXISTS product_gallery (
@@ -41,5 +41,5 @@ SELECT
   table_type
 FROM information_schema.tables 
 WHERE table_schema = 'public' 
-AND table_name IN ('users', 'product_gallery')
+AND table_name IN ('users', 'qna_submissions', 'product_gallery')
 ORDER BY table_name;
