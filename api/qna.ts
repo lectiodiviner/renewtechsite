@@ -21,12 +21,17 @@ const insertQnaSubmissionSchema = z.object({
 });
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  console.log(`API 요청 받음: ${req.method} ${req.url}`);
+  console.log('요청 헤더:', req.headers);
+  console.log('요청 본문:', req.body);
+  
   // CORS 설정
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
 
   if (req.method === 'OPTIONS') {
+    console.log('OPTIONS 요청 처리');
     return res.status(200).end();
   }
 
