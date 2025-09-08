@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { type User, type InsertUser, type QnaSubmission, type InsertQnaSubmission } from "@shared/schema";
+import { type User, type InsertUser, type QnaSubmission, type InsertQnaSubmission } from "../shared/schema.js";
+import { type IStorage } from "./storage.js";
 
 // Supabase 클라이언트 생성
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
@@ -88,9 +89,11 @@ export class SupabaseStorageV2 implements IStorage {
 
   async createQnaSubmission(insertQnaSubmission: InsertQnaSubmission): Promise<QnaSubmission> {
     if (!this.isConnected()) {
+      console.error('Supabase 연결 실패 - URL:', process.env.VITE_SUPABASE_URL, 'Key:', process.env.SUPABASE_SERVICE_ROLE_KEY ? '설정됨' : '설정되지 않음');
       throw new Error('Supabase가 연결되지 않았습니다.');
     }
     try {
+      console.log('Supabase에 QnA 제출 시도:', insertQnaSubmission);
       const { data, error } = await supabase
         .from('qna_submissions')
         .insert(insertQnaSubmission)
@@ -98,12 +101,13 @@ export class SupabaseStorageV2 implements IStorage {
         .single();
       
       if (error) {
-        console.error('Error creating QnA submission:', error);
+        console.error('Supabase QnA 제출 에러:', error);
         throw error;
       }
+      console.log('Supabase QnA 제출 성공:', data);
       return data;
     } catch (error) {
-      console.error('Error creating QnA submission:', error);
+      console.error('Supabase QnA 제출 중 예외:', error);
       throw error;
     }
   }
@@ -181,15 +185,3 @@ export class SupabaseStorageV2 implements IStorage {
   }
 }
 
-// IStorage 인터페이스를 다시 export
-export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
-  
-  // QNA methods
-  createQnaSubmission(submission: InsertQnaSubmission): Promise<QnaSubmission>;
-  getQnaSubmissions(): Promise<QnaSubmission[]>;
-  getQnaSubmission(id: string): Promise<QnaSubmission | undefined>;
-  answerQnaSubmission(id: string, answer: string): Promise<QnaSubmission | undefined>;
-}

@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type QnaSubmission, type InsertQnaSubmission } from "@shared/schema";
+import { type User, type InsertUser, type QnaSubmission, type InsertQnaSubmission } from "../shared/schema.js";
 import { randomUUID } from "crypto";
 
 // modify the interface with any CRUD methods
