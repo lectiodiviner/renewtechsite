@@ -17,10 +17,18 @@
       "use": "@vercel/node"
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/api/qna",
+      "dest": "/api/qna.ts"
+    },
+    {
+      "src": "/api/test",
+      "dest": "/api/test.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ],
   "env": {
